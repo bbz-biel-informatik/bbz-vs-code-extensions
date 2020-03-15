@@ -35,12 +35,12 @@ function download_PHP_Windows(context: vscode.ExtensionContext) {
 		const phpFolder = `php_${PHP_VERSION.replace('.', '_')}`;
 		archive.extractAllTo(`${context.extensionPath}\\${phpFolder}`);
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
-		const phpLocation = vscode.workspace.getConfiguration();
-		phpLocation.update('phpserver.phpPath', `${context.extensionPath}\\${phpFolder}\\php.exe`)
+		const config = vscode.workspace.getConfiguration();
+		config.update('phpserver.phpPath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global)
 			.then(() => {
-				phpLocation.update('php.validate.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`);
+				config.update('php.validate.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
 			}).then(() => {
-				phpLocation.update('php.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`);
+				config.update('php.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
 			}).then(() => {
 				vscode.window.showInformationMessage(`[BBZ Config] Successfully configured php`);
 			});
@@ -48,6 +48,28 @@ function download_PHP_Windows(context: vscode.ExtensionContext) {
 
 	return dl.start();
 }
+
+function systemPhpVersion() {
+	try {
+		const rawOutput = cp.execSync('php -v').toString();
+		const versionRegex = rawOutput.match(/PHP (?<major_version>\d)\.(?<minor_version>\d).(?<patch_version>\d))/i);
+		if (!versionRegex || !versionRegex.groups) {
+			return;
+		}
+		const majorVersion = Number.parseInt(versionRegex.groups['major_version']);
+		const minorVersion = Number.parseInt(versionRegex.groups['minor_version']);
+		const patchVersion = Number.parseInt(versionRegex.groups['patch_version']);
+		return {
+			majorVersion: majorVersion,
+			minorVersion: minorVersion,
+			patchVersion: patchVersion,
+			versionString: `${majorVersion}.${minorVersion}.${patchVersion}`
+		};
+	} catch (error) {
+		return;
+	}
+}
+
 function checkPhpInstallation() {
 	const phpLocation = vscode.workspace.getConfiguration('phpserver')['phpPath'];
 	if (phpLocation && fs.existsSync(phpLocation)) {
@@ -55,19 +77,10 @@ function checkPhpInstallation() {
 	}
 
 	try {
-		const rawOutput = cp.execSync('php -v').toString();
-		const versionRegex = rawOutput.match(/PHP (?<major_version>\d)\.(?<minor_version>\d).(?<patch_version>\d))/i);
-		if (!versionRegex || !versionRegex.groups) {
+		const systemPhp = systemPhpVersion();
+		if (!systemPhp || systemPhp.majorVersion < 7) {
 			return false;
 		}
-		const majorVersion = Number.parseInt(versionRegex.groups['major_version']);
-		const minorVersion = Number.parseInt(versionRegex.groups['minor_version']);
-		const patchVersion = Number.parseInt(versionRegex.groups['patch_version']);
-		if (majorVersion < 7) {
-			return false;
-		}
-		const phpLocation = vscode.workspace.getConfiguration();
-		phpLocation.update('intelephense.environment.phpVersion', `${majorVersion}.${minorVersion}.${patchVersion}`);
 		return true;
 	} catch (error) {
 		return false;
@@ -94,10 +107,14 @@ function checkAndInstallPHP(context: vscode.ExtensionContext) {
 
 function configure(context: vscode.ExtensionContext) {
 	checkAndInstallPHP(context)?.then(() => {
+		const phpVersion = systemPhpVersion() || { versionString: PHP_VERSION };
 		const configuration = vscode.workspace.getConfiguration();
 		configuration.update('workbench.settings.useSplitJSON', true, vscode.ConfigurationTarget.Global)
 			.then(() => {
 				configuration.update('php.validate.run', 'onType', vscode.ConfigurationTarget.Global);
+			})
+			.then(() => {
+				configuration.update('intelephense.environment.phpVersion', phpVersion.versionString, vscode.ConfigurationTarget.Global);
 			})
 			.then(() => {
 				configuration.update('[html]', { 'editor.defaultFormatter': 'vscode.html-language-features' }, vscode.ConfigurationTarget.Global);
