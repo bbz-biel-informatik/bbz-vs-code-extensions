@@ -1,5 +1,13 @@
 # VS Code extensions BBZ
 
+Install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=lebalz.bbz-vs-code-extensions).
+
+
+To configure your VS Code, run the Command `BBZ: Configure VS Code`:
+  1. View > Command Palette...
+  2. Enter `BBZ: Configure VS Code`
+
+
 ## Extensions
 - [vscode-intelephense-client](https://marketplace.visualstudio.com/items?itemName=bmewburn.vscode-intelephense-client)
 - [phpserver](https://marketplace.visualstudio.com/items?itemName=brapifra.phpserver)
