@@ -20,7 +20,7 @@
         "Extension Packs"
     ],
     "galleryBanner": {
-        "color": "#6682BA",
+        "color": "#009CD0",
         "theme": "dark"
     },
     "icon": "logo.png",
@@ -37,9 +37,11 @@
         "hookyqr.beautify",
         "rifi2k.format-html-in-php",
         "ritwickdey.liveserver",
-        "yzane.markdown-pdf"
+        "yzane.markdown-pdf",
+        "rax.vscode-flexbox-picker"
     ],
     "contributes": {
+        "commands": [],
         "keybindings": [
             {
                 "key": "ctrl+shift+i",
