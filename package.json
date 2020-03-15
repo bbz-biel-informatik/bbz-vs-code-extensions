@@ -1,0 +1,91 @@
+{
+    "name": "bbz-vs-code-extensions",
+    "displayName": "bbz-vs-code-extensions",
+    "description": "VS Code extensions used for html, css, php and sql lectures at the BBZ school",
+    "version": "0.0.1",
+    "publisher": "lebalz",
+    "engines": {
+        "vscode": "^1.41.1"
+    },
+    "homepage": "https://github.com/bbz-biel-informatik/bbz-vs-code-extensions/blob/master/README.md",
+    "bugs": {
+        "url": "https://github.com/bbz-biel-informatik/bbz-vs-code-extensions/issues"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bbz-biel-informatik/bbz-vs-code-extensions"
+    },
+    "categories": [
+        "Extension Packs"
+    ],
+    "galleryBanner": {
+        "color": "#6682BA",
+        "theme": "dark"
+    },
+    "icon": "logo.png",
+    "extensionPack": [
+        "bmewburn.vscode-intelephense-client",
+        "brapifra.phpserver",
+        "christian-kohler.path-intellisense",
+        "darkriszty.markdown-table-prettify",
+        "dzhavat.css-flexbox-cheatsheet",
+        "ecmel.vscode-html-css",
+        "felixfbecker.php-debug",
+        "formulahendry.auto-close-tag",
+        "formulahendry.auto-rename-tag",
+        "hookyqr.beautify",
+        "rifi2k.format-html-in-php",
+        "ritwickdey.liveserver",
+        "yzane.markdown-pdf"
+    ],
+    "contributes": {
+        "keybindings": [
+            {
+                "key": "ctrl+shift+i",
+                "command": "editor.action.formatDocument",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "key": "shift+alt+f",
+                "command": "-editor.action.formatDocument",
+                "when": "editorTextFocus && !editorReadonly"
+            },
+            {
+                "key": "ctrl+shift+down",
+                "command": "cursorColumnSelectDown",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "ctrl+shift+alt+down",
+                "command": "-cursorColumnSelectDown",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "ctrl+shift+alt+up",
+                "command": "cursorColumnSelectPageUp",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "ctrl+shift+alt+pageup",
+                "command": "-cursorColumnSelectPageUp",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "ctrl+shift+up",
+                "command": "cursorColumnSelectUp",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "ctrl+shift+alt+up",
+                "command": "-cursorColumnSelectUp",
+                "when": "textInputFocus"
+            },
+            {
+                "key": "alt+left",
+                "command": "workbench.action.focusLeftGroup",
+                "when": "editorTextFocus"
+            }
+        ]
+    }
+}
