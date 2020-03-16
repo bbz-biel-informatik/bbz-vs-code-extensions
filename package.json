@@ -51,8 +51,8 @@
                 "command": "extension.configure",
                 "title": "BBZ: Configure VS Code",
                 "icon": {
-                    "light": "./logo.png",
-                    "dark": "./logo.png"
+                    "light": "./icon.png",
+                    "dark": "./icon.png"
                 }
             },
             {
