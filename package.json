@@ -2,7 +2,7 @@
     "name": "bbz-vs-code-extensions",
     "displayName": "bbz-vs-code-extensions",
     "description": "VS Code extensions used for html, css, php and sql lectures at the BBZ school",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "publisher": "lebalz",
     "engines": {
         "vscode": "^1.41.1"
@@ -20,7 +20,7 @@
         "Extension Packs"
     ],
     "galleryBanner": {
-        "color": "#009CD0",
+        "color": "#0b1b3d",
         "theme": "dark"
     },
     "icon": "logo.png",
