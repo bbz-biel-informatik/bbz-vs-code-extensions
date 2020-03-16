@@ -75,7 +75,7 @@ function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progre
 
 		var archive = new zip(tmpFilePath);
 
-		const phpFolder = `php_${PHP_VERSION.replace('.', '_')}`;
+		const phpFolder = `php_${PHP_VERSION.replace(/\./g, '_')}`;
 		archive.extractAllTo(`${phpSrcFolder}\\${phpFolder}`, true);
 
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
