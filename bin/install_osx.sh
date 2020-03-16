@@ -13,7 +13,7 @@ else
 fi
 
 if [ -z $2]; then
-  PW=''
+  PW=""
 else
   PW=$2
 fi

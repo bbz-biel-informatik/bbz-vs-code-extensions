@@ -13,7 +13,7 @@ const PHP_VERSION = '7.4.3';
 const PHP_OSX_VERSION = '7.3';
 
 function download_PHP_OSX(context: vscode.ExtensionContext) {
-
+	vscode.window.setStatusBarMessage('Starting php installation...', 10000);
 	const downloadExec = promisify(exec);
 	const configExec = promisify(exec);
 	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' }))
@@ -124,7 +124,7 @@ function checkAndInstallPHP(context: vscode.ExtensionContext, force: boolean = f
 			vscode.window.showInformationMessage('[BBZ Config] Download PHP Version 7.4.3');
 			return download_PHP_Windows(context);
 		} else if (process.platform === 'darwin') {
-			return download_PHP_OSX();
+			return download_PHP_OSX(context);
 		} else {
 			return new Promise(
 				() => vscode.window.showErrorMessage('[BBZ Config] Can not configure PHP for you, do it courself.')
