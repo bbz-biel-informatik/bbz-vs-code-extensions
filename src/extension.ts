@@ -21,9 +21,9 @@ function download_PHP_OSX(context: vscode.ExtensionContext) {
 			if (!password) {
 				return;
 			}
-			return downloadExec(`cat -s ${`${context.extensionPath}/bin/install_osx.sh`} | bash -s -- ${PHP_OSX_VERSION} "${password}"`)
+			return downloadExec(`cat -s ${`${context.extensionPath}/bin/install_osx.sh`} | bash -s ${PHP_OSX_VERSION} "${password}"`)
 		}).then((value) => {
-			if (!value || value.stderr.length > 0) {
+			if (!value || !value.stdout.endsWith('Finished.\n')) {
 				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value ? value.stderr : ''}`);
 				return;
 			}
