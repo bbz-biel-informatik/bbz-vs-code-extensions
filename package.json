@@ -2,7 +2,7 @@
     "name": "bbz-vs-code-extensions",
     "displayName": "bbz-vs-code-extensions",
     "description": "VS Code extensions used for html, css, php and sql lectures at the BBZ school",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "publisher": "lebalz",
     "engines": {
         "vscode": "^1.41.1"
@@ -49,7 +49,11 @@
         "commands": [
             {
                 "command": "extension.configure",
-                "title": "BBZ: Configure VS Code"
+                "title": "BBZ: Configure VS Code",
+                "icon": {
+                    "light": "./logo.png",
+                    "dark": "./logo.png"
+                }
             },
             {
                 "command": "extension.forceConfigure",
