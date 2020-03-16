@@ -1,11 +1,19 @@
 # VS Code extensions BBZ
 
+<a href="https://marketplace.visualstudio.com/items?itemName=lebalz.bbz-vs-code-extensions">
+
+![BBZ Biel](logo.png)
+
+</a>
+
 Install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=lebalz.bbz-vs-code-extensions).
 
 
 To configure your VS Code, run the Command `BBZ: Configure VS Code`:
   1. View > Command Palette...
   2. Enter `BBZ: Configure VS Code`
+  3. (only for OS X): in case php 7 is not installed: enter your user password for the php installation
+  4. wait...
 
 
 ## Extensions
