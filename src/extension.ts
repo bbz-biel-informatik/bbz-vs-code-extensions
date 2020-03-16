@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import * as cp from 'child_process';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
 // import * as http from 'http';
 import { DownloaderHelper } from 'node-downloader-helper';
 import * as zip from 'adm-zip';
@@ -11,25 +13,29 @@ const PHP_VERSION = '7.4.3';
 const PHP_OSX_VERSION = '7.3';
 
 function download_PHP_OSX() {
+	const downloadExec = promisify(exec);
+	const configExec = promisify(exec);
 	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' })
 		.then((password) => {
 			if (!password) {
 				return;
 			}
-			cp.exec(`(echo "${password}" | sudo -S echo 'login successful') && curl -s https://php-osx.liip.ch/install.sh | bash -s ${PHP_OSX_VERSION}`, (error: cp.ExecException | null, stdout: string, stderr: string) => {
-				if (error) {
-					vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${error}`);
-					return;
-				}
-				try {
-					cp.execSync('touch ~/.profile && echo "export PATH=/usr/local/php5/bin:$PATH" >> ~/.profile && . ~/.profile');
-					vscode.window.showInformationMessage(`Successful installed and configured PHP Version ${PHP_OSX_VERSION}`);
-				} catch (error) {
-					vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${error}`);
-					return;
-				}
-			})
-		}));
+			return downloadExec(`(echo "${password}" | sudo -S echo 'login successful') && curl -s https://php-osx.liip.ch/install.sh | bash -s ${PHP_OSX_VERSION}`)
+		}).then((value) => {
+			if (!value || value.stderr.length > 0) {
+				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value.stderr}`);
+				return;
+			}
+
+			return configExec('touch ~/.profile && echo "export PATH=/usr/local/php5/bin:$PATH" >> ~/.profile && . ~/.profile')
+		}).then((value) => {
+			if (!value || value.stderr.length > 0) {
+				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value.stderr}`);
+				return;
+			} else {
+				vscode.window.showInformationMessage(`Successful installed and configured PHP Version ${PHP_OSX_VERSION}`);
+			}
+		});
 }
 
 function download_PHP_Windows(context: vscode.ExtensionContext) {
