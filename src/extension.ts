@@ -12,7 +12,8 @@ import * as zip from 'adm-zip';
 const PHP_VERSION = '7.4.3';
 const PHP_OSX_VERSION = '7.3';
 
-function download_PHP_OSX() {
+function download_PHP_OSX(context: vscode.ExtensionContext) {
+
 	const downloadExec = promisify(exec);
 	const configExec = promisify(exec);
 	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' }))
@@ -20,7 +21,7 @@ function download_PHP_OSX() {
 			if (!password) {
 				return;
 			}
-			return downloadExec(`(echo "${password}" | sudo -S echo 'login successful') && curl -s https://php-osx.liip.ch/install.sh | bash -s ${PHP_OSX_VERSION}`)
+			return downloadExec(`cat -s ${`${context.extensionPath}/bin/install_osx.sh`} | bash -s -- ${PHP_OSX_VERSION} "${password}"`)
 		}).then((value) => {
 			if (!value || value.stderr.length > 0) {
 				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value ? value.stderr : ''}`);
