@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { exec } from 'child_process';
+import { exec, execSync } from 'child_process';
 import { promisify } from 'util';
 
 // import * as http from 'http';
@@ -15,7 +15,7 @@ const PHP_OSX_VERSION = '7.3';
 function download_PHP_OSX() {
 	const downloadExec = promisify(exec);
 	const configExec = promisify(exec);
-	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' })
+	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' }))
 		.then((password) => {
 			if (!password) {
 				return;
@@ -23,14 +23,14 @@ function download_PHP_OSX() {
 			return downloadExec(`(echo "${password}" | sudo -S echo 'login successful') && curl -s https://php-osx.liip.ch/install.sh | bash -s ${PHP_OSX_VERSION}`)
 		}).then((value) => {
 			if (!value || value.stderr.length > 0) {
-				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value.stderr}`);
+				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value ? value.stderr : ''}`);
 				return;
 			}
 
 			return configExec('touch ~/.profile && echo "export PATH=/usr/local/php5/bin:$PATH" >> ~/.profile && . ~/.profile')
 		}).then((value) => {
 			if (!value || value.stderr.length > 0) {
-				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value.stderr}`);
+				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value ? value.stderr : ''}`);
 				return;
 			} else {
 				vscode.window.showInformationMessage(`Successful installed and configured PHP Version ${PHP_OSX_VERSION}`);
@@ -81,7 +81,7 @@ function download_PHP_Windows(context: vscode.ExtensionContext) {
 
 function systemPhpVersion() {
 	try {
-		const rawOutput = cp.execSync('php -v').toString();
+		const rawOutput = execSync('php -v').toString();
 		const versionRegex = rawOutput.match(/PHP (?<major_version>\d)\.(?<minor_version>\d).(?<patch_version>\d))/i);
 		if (!versionRegex || !versionRegex.groups) {
 			return;
