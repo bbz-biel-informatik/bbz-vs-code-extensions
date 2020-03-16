@@ -12,7 +12,7 @@ else
 	TYPE=$1
 fi
 
-if [ -z $2]; then
+if [ -z $2 ]; then
   PW=""
 else
   PW=$2
@@ -157,8 +157,9 @@ curl -s -o /tmp/packager.tgz https://s3-eu-west-1.amazonaws.com/php-osx.liip.ch/
 
 echo "Unpack packager.tgz";
 echo "Please type in your password, as we want to install this into /usr/local"
-if [ !  -d /usr/local ] ; then echo $PW | sudo -S mkdir /usr/local; fi
-echo $PW | sudo -S tar -C /usr/local -xzf /tmp/packager.tgz
+echo $PW | sudo -S echo "use root privileges"
+if [ !  -d /usr/local ] ; then sudo mkdir /usr/local; fi
+sudo tar -C /usr/local -xzf /tmp/packager.tgz
 
 if [[ -f /usr/bin/python2.7 ]]; then
    PYTHONPATH=/usr/bin/python2.7
@@ -172,6 +173,6 @@ fi
 
 echo "Start packager (may take some time) using $PYTHONPATH";
 
-echo $PW | sudo -S $PYTHONPATH /usr/local/packager/packager.py install $TYPE-frontenddev
+sudo $PYTHONPATH /usr/local/packager/packager.py install $TYPE-frontenddev
 cd $ORIPWD
 echo "Finished."
