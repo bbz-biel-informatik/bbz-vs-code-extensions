@@ -8,18 +8,42 @@ import { DownloaderHelper } from 'node-downloader-helper';
 import * as zip from 'adm-zip';
 
 const PHP_VERSION = '7.4.3';
+const PHP_OSX_VERSION = '7.3';
+
+function download_PHP_OSX() {
+	return Promise.resolve(vscode.window.showInputBox({ password: true, prompt: 'Password (used for the mac login)' })
+		.then((password) => {
+			if (!password) {
+				return;
+			}
+			cp.exec(`(echo "${password}" | sudo -S echo 'login successful') && curl -s https://php-osx.liip.ch/install.sh | bash -s ${PHP_OSX_VERSION}`, (error: cp.ExecException | null, stdout: string, stderr: string) => {
+				if (error) {
+					vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${error}`);
+					return;
+				}
+				try {
+					cp.execSync('touch ~/.profile && echo "export PATH=/usr/local/php5/bin:$PATH" >> ~/.profile && . ~/.profile');
+					vscode.window.showInformationMessage(`Successful installed and configured PHP Version ${PHP_OSX_VERSION}`);
+				} catch (error) {
+					vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${error}`);
+					return;
+				}
+			})
+		}));
+}
 
 function download_PHP_Windows(context: vscode.ExtensionContext) {
-	if (!fs.existsSync(context.extensionPath)) {
-		fs.mkdirSync(context.extensionPath);
+	const extensionsFolder = context.extensionPath;
+	if (!fs.existsSync(extensionsFolder)) {
+		fs.mkdirSync(extensionsFolder);
 	}
 	const src = `http://windows.php.net/downloads/releases/php-${PHP_VERSION}-Win32-vc15-x64.zip`;
 	const tempFileName = `PHP_${PHP_VERSION}_${Date.now()}.zip`;
-	var tmpFilePath = `${context.extensionPath}\\${tempFileName}`;
+	var tmpFilePath = `${extensionsFolder}\\${tempFileName}`;
 	vscode.window.showInformationMessage(`[BBZ Config] ${tmpFilePath}`);
 	const dl = new DownloaderHelper(
 		src,
-		context.extensionPath,
+		extensionsFolder,
 		{
 			fileName: tempFileName,
 			headers: {
@@ -33,14 +57,14 @@ function download_PHP_Windows(context: vscode.ExtensionContext) {
 	dl.on('end', () => {
 		var archive = new zip(tmpFilePath);
 		const phpFolder = `php_${PHP_VERSION.replace('.', '_')}`;
-		archive.extractAllTo(`${context.extensionPath}\\${phpFolder}`);
+		archive.extractAllTo(`${extensionsFolder}\\${phpFolder}`, true);
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
 		const config = vscode.workspace.getConfiguration();
-		config.update('phpserver.phpPath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global)
+		config.update('phpserver.phpPath', `${extensionsFolder}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global)
 			.then(() => {
-				config.update('php.validate.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
+				config.update('php.validate.executablePath', `${extensionsFolder}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
 			}).then(() => {
-				config.update('php.executablePath', `${context.extensionPath}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
+				config.update('php.executablePath', `${extensionsFolder}\\${phpFolder}\\php.exe`, vscode.ConfigurationTarget.Global);
 			}).then(() => {
 				vscode.window.showInformationMessage(`[BBZ Config] Successfully configured php`);
 			});
@@ -87,15 +111,13 @@ function checkPhpInstallation() {
 	}
 }
 
-function checkAndInstallPHP(context: vscode.ExtensionContext) {
-	if (!checkPhpInstallation()) {
+function checkAndInstallPHP(context: vscode.ExtensionContext, force: boolean = false) {
+	if (force || !checkPhpInstallation()) {
 		if (process.platform === 'win32') {
 			vscode.window.showInformationMessage('[BBZ Config] Download PHP Version 7.4.3');
 			return download_PHP_Windows(context);
 		} else if (process.platform === 'darwin') {
-			return new Promise(
-				() => vscode.window.showErrorMessage('[BBZ Config] Can not configure PHP for you, do it courself.')
-			);
+			return download_PHP_OSX();
 		} else {
 			return new Promise(
 				() => vscode.window.showErrorMessage('[BBZ Config] Can not configure PHP for you, do it courself.')
@@ -105,8 +127,8 @@ function checkAndInstallPHP(context: vscode.ExtensionContext) {
 }
 
 
-function configure(context: vscode.ExtensionContext) {
-	checkAndInstallPHP(context)?.then(() => {
+function configure(context: vscode.ExtensionContext, force: boolean = false) {
+	checkAndInstallPHP(context, force)?.then(() => {
 		const phpVersion = systemPhpVersion() || { versionString: PHP_VERSION };
 		const configuration = vscode.workspace.getConfiguration();
 		configuration.update('workbench.settings.useSplitJSON', true, vscode.ConfigurationTarget.Global)
@@ -137,11 +159,14 @@ function configure(context: vscode.ExtensionContext) {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	let disposable = vscode.commands.registerCommand('extension.configure', () => {
+	const configDisposable = vscode.commands.registerCommand('extension.configure', () => {
 		configure(context);
 	});
-
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(configDisposable);
+	const forceConfigDisposable = vscode.commands.registerCommand('extension.forceConfigure', () => {
+		configure(context, true);
+	});
+	context.subscriptions.push(forceConfigDisposable);
 }
 
 // this method is called when your extension is deactivated

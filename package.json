@@ -2,7 +2,7 @@
     "name": "bbz-vs-code-extensions",
     "displayName": "bbz-vs-code-extensions",
     "description": "VS Code extensions used for html, css, php and sql lectures at the BBZ school",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "lebalz",
     "engines": {
         "vscode": "^1.41.1"
@@ -42,13 +42,18 @@
     ],
     "main": "./out/extension.js",
     "activationEvents": [
-        "onCommand:extension.configure"
+        "onCommand:extension.configure",
+        "onCommand:extension.forceConfigure"
     ],
     "contributes": {
         "commands": [
             {
                 "command": "extension.configure",
                 "title": "BBZ: Configure VS Code"
+            },
+            {
+                "command": "extension.forceConfigure",
+                "title": "BBZ: Force configure VS Code (install PHP even if present)"
             }
         ],
         "keybindings": [
