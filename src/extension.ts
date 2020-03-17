@@ -28,9 +28,9 @@ function download_PHP_OSX(context: vscode.ExtensionContext, progress: Progress) 
 			}
 			progress.report({ increment: 15, message: "Downloading PHP source..." });
 
-			return downloadExec(`cat -s ${`${context.extensionPath}/bin/install_osx.sh`} | bash -s ${PHP_OSX_VERSION} "${password}"`);
+			return downloadExec(`cat -s ${`${context.extensionPath}/bin/install_osx.sh`} | bash -s ${PHP_OSX_VERSION} "${password}" && echo "${password}" | sudo -S cp ${`${context.extensionPath}/bin/php.ini`} /usr/local/php5/lib/php.ini && echo "Success."`);
 		}).then((value) => {
-			if (!value || !value.stdout.endsWith('Finished.\n')) {
+			if (!value || !value.stdout.endsWith('Success.\n')) {
 				vscode.window.showErrorMessage(`Could not install PHP Version ${PHP_OSX_VERSION}: ${value ? value.stderr : ''}`);
 				return;
 			}
@@ -77,8 +77,11 @@ function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progre
 
 		const phpFolder = `php_${PHP_VERSION.replace(/\./g, '_')}`;
 		archive.extractAllTo(`${phpSrcFolder}\\${phpFolder}`, true);
-
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
+
+		progress.report({ increment: 60, message: "Copy php.ini..." });
+		fs.copyFileSync(`${context.extensionPath}\\bin\\php.ini`, `${phpSrcFolder}\\${phpFolder}\\php.ini`);
+
 
 		const config = vscode.workspace.getConfiguration();
 		progress.report({ increment: 70, message: "Configure PHP..." });
