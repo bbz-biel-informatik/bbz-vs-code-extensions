@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { exec, execSync } from 'child_process';
 import { promisify } from 'util';
+import * as path from 'path';
 
 // import * as http from 'http';
 import { DownloaderHelper } from 'node-downloader-helper';
@@ -48,6 +49,25 @@ function download_PHP_OSX(context: vscode.ExtensionContext, progress: Progress) 
 		});
 }
 
+/**
+ * Remove directory recursively
+ * @param {string} dir_path
+ * @see https://stackoverflow.com/a/42505874/3027390
+ */
+function rimraf(dir_path: string) {
+    if (fs.existsSync(dir_path)) {
+        fs.readdirSync(dir_path).forEach(function(entry) {
+            var entry_path = path.join(dir_path, entry);
+            if (fs.lstatSync(entry_path).isDirectory()) {
+                rimraf(entry_path);
+            } else {
+                fs.unlinkSync(entry_path);
+            }
+        });
+        fs.rmdirSync(dir_path);
+    }
+}
+
 function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progress) {
 	const phpSrcFolder = `${context.extensionPath.split('\\').slice(0, -1).join('\\')}\\php`;
 	if (!fs.existsSync(phpSrcFolder)) {
@@ -75,16 +95,17 @@ function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progre
 		progress.report({ increment: 40, message: "Extracting PHP..." });
 
 		const phpFolder = `php_${PHP_VERSION.replace(/\./g, '_')}`;
-		if (fs.existsSync(`${phpSrcFolder}\\${phpFolder}`)) {
-			fs.rmdirSync(`${phpSrcFolder}\\${phpFolder}`, { recursive: true });
+		const phpFolderPath = `${phpSrcFolder}\\${phpFolder}`;
+		if (fs.existsSync(phpFolderPath)) {
+			rimraf(phpFolderPath);
 		}
 		var archive = new zip(tmpFilePath);
 
-		archive.extractAllTo(`${phpSrcFolder}\\${phpFolder}`, true);
+		archive.extractAllTo(phpFolderPath, true);
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
 
 		progress.report({ increment: 60, message: "Copy php.ini..." });
-		fs.copyFileSync(`${context.extensionPath}\\bin\\php.ini`, `${phpSrcFolder}\\${phpFolder}\\php.ini`);
+		fs.copyFileSync(`${context.extensionPath}\\bin\\php.ini`, `${phpFolderPath}\\php.ini`);
 
 
 		const config = vscode.workspace.getConfiguration();
