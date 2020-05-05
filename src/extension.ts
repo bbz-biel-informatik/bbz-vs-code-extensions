@@ -74,12 +74,12 @@ function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progre
 	dl.on('end', () => {
 		progress.report({ increment: 40, message: "Extracting PHP..." });
 
-		var archive = new zip(tmpFilePath);
-
 		const phpFolder = `php_${PHP_VERSION.replace(/\./g, '_')}`;
 		if (fs.existsSync(`${phpSrcFolder}\\${phpFolder}`)) {
-			fs.rmdirSync(`${phpSrcFolder}\\${phpFolder}`);
+			fs.rmdirSync(`${phpSrcFolder}\\${phpFolder}`, { recursive: true });
 		}
+		var archive = new zip(tmpFilePath);
+
 		archive.extractAllTo(`${phpSrcFolder}\\${phpFolder}`, true);
 		fs.unlink(tmpFilePath, () => { console.log('error'); });
 
