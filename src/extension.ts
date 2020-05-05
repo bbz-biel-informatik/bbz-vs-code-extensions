@@ -53,7 +53,8 @@ function download_PHP_Windows(context: vscode.ExtensionContext, progress: Progre
 	if (!fs.existsSync(phpSrcFolder)) {
 		fs.mkdirSync(phpSrcFolder, { recursive: true });
 	}
-	const src = `http://windows.php.net/downloads/releases/php-${PHP_VERSION}-Win32-vc15-x64.zip`;
+
+	const src = `http://windows.php.net/downloads/releases/archives/php-${PHP_VERSION}-Win32-vc15-x64.zip`;
 	const tempFileName = `PHP_${PHP_VERSION}_${Date.now()}.zip`;
 	var tmpFilePath = `${phpSrcFolder}\\${tempFileName}`;
 
