@@ -2,7 +2,7 @@
     "name": "bbz-vs-code-extensions",
     "displayName": "bbz-vs-code-extensions",
     "description": "VS Code extensions used for html, css, php and sql lectures at the BBZ school",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "publisher": "lebalz",
     "engines": {
         "vscode": "^1.41.1"
