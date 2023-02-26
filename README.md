@@ -28,5 +28,5 @@ To configure your VS Code, run the Command `BBZ: Configure VS Code`:
 - [auto-rename-tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
 - [beautify](https://marketplace.visualstudio.com/items?itemName=hookyqr.beautify)
 - [format-html-in-php](https://marketplace.visualstudio.com/items?itemName=rifi2k.format-html-in-php)
-- [liveserver](https://marketplace.visualstudio.com/items?itemName=ritwickdey.liveserver)
+- [fiveserver](https://marketplace.visualstudio.com/items?itemName=yandeu.five-server)
 - [markdown-pdf](https://marketplace.visualstudio.com/items?itemName=yzane.markdown-pdf)
